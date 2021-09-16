@@ -2,6 +2,7 @@ import vgamepad as vg
 import time
 import tkinter as tk
 import threading
+import random
 
 gamepad = vg.VX360Gamepad()
 
@@ -21,6 +22,30 @@ valuesDI = {
     "down": {
         "x": 0.0,
         "y": -1
+    },
+    "topright": {
+        "x": -1.0,
+        "y": 1.0
+    },
+    "topleft": {
+        "x": -1.0,
+        "y": 1.0
+    },
+    "bottomright": {
+        "x": 1.0,
+        "y": -1.0
+    },
+    "bottomleft": {
+        "x": -1.0,
+        "y": -1.0
+    },
+    "left/right": {
+        "x": 0,
+        "y": 0
+    },
+    "random": {
+        "x": 0,
+        "y": 0
     }
 }
 
@@ -45,33 +70,75 @@ di_select.pack()
 giveInputs = False
 threadActive = True
 
-def insertInputs():
+randomDict = {
+    "0": -1.0,
+    "1": 1.0,
+}
 
+def insertInputs():
+    xDI = 0
+    yDI = 0
     while threadActive:
         if not giveInputs:
             continue
         global selectedDI
-        xDI = valuesDI[selectedDI.get()]["x"]
-        yDI = valuesDI[selectedDI.get()]["y"]
+        if selectedDI.get() == "random":
+            x = round(random.uniform(0, 1))
+            y = round(random.uniform(0, 1))
+            xDI = randomDict[x]
+            yDI = randomDict[y]
+        elif selectedDI.get() == "left/right":
+            x = round(random.uniform(0, 1))
+            xDI = randomDict[str(x)]
+            yDI = 0
+            print("")
+        else:
+            xDI = valuesDI[selectedDI.get()]["x"]
+            yDI = valuesDI[selectedDI.get()]["y"]
+
         gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
         time.sleep(oneFrame)
         gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
 
-        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.left_trigger(value=255)
         gamepad.left_joystick_float(x_value_float=xDI, y_value_float=yDI)
+        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
 
-        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
-        gamepad.update()
-        
         time.sleep(oneFrame)
         gamepad.left_trigger(value=0)
+        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
         time.sleep(oneFrame)
+        """
+        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        gamepad.left_joystick_float(x_value_float=0.0, y_value_float=0.0)
+        gamepad.update()
+        time.sleep(oneFrame * 5)
+        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        gamepad.update()
 
+        gamepad.left_trigger(value=255)
+        gamepad.right_trigger(value=255)
+        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        gamepad.update()
+
+        time.sleep(oneFrame)
+        gamepad.left_joystick_float(x_value_float=xDI, y_value_float=yDI)
+        gamepad.left_trigger(value=0)
+        gamepad.right_trigger(value=0)
+        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        gamepad.update()
+        time.sleep(oneFrame)
+        
+        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN)
+        gamepad.update()
+        time.sleep(oneFrame)
+        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN)
+        gamepad.update()
+        """
 
 def startController():
     #Wake device
@@ -95,8 +162,8 @@ t.start()
 
 def stopController():
     global giveInputs
-    gamepad.reset()
     giveInputs = False
+    gamepad.reset()
 
 def close():
     global giveInputs, threadActive
