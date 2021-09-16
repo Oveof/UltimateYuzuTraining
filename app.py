@@ -59,14 +59,16 @@ def insertInputs():
         gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
 
+        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.left_trigger(value=255)
         gamepad.left_joystick_float(x_value_float=xDI, y_value_float=yDI)
-        gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
 
+        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        gamepad.update()
+        
         time.sleep(oneFrame)
         gamepad.left_trigger(value=0)
-        gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
         gamepad.update()
         time.sleep(oneFrame)
 
