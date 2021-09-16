@@ -93,6 +93,7 @@ t.start()
 
 def stopController():
     global giveInputs
+    gamepad.reset()
     giveInputs = False
 
 def close():
